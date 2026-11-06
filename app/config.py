@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     webhook_value1: str = ""
     webhook_value2: str = ""
     webhook_value3: str = ""
-    webhook_delay_seconds: float = Field(default=60.0, ge=0)
 
 
 @lru_cache

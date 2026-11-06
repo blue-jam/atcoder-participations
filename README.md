@@ -1,7 +1,7 @@
 # atcoder-participations
 
 指定したユーザーが、指定した種類の AtCoder コンテストに直近1週間で参加したかを確認します。
-参加がなければ IFTTT の事前警告 webhook を送り、1分後に罰を実行する webhook を送ります。
+参加がなければ IFTTT の事前警告 webhook を送り、続けて罰を実行する webhook を送ります。
 API サーバーやデータベースは使用せず、GitHub Actions が毎週月曜日23:00（JST）に単発実行します。
 
 ## GitHub の設定

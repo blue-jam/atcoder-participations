@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from datetime import UTC, datetime, timedelta
 
 import httpx
@@ -63,6 +62,5 @@ async def check_and_notify(
         "value3": settings.webhook_value3 or now.astimezone(UTC).isoformat(),
     }
     await send_webhook(settings.warning_webhook_url, payload, settings.http_timeout_seconds)
-    await asyncio.sleep(settings.webhook_delay_seconds)
     await send_webhook(settings.penalty_webhook_url, payload, settings.http_timeout_seconds)
     return True

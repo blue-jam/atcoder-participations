@@ -40,7 +40,6 @@ def _settings() -> Settings:
         webhook_value1="custom-1",
         webhook_value2="custom-2",
         webhook_value3="custom-3",
-        webhook_delay_seconds=0,
     )
 
 
