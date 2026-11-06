@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   check:
+    environment: Weekly Run
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
