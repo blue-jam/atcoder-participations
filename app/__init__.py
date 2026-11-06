@@ -1,0 +1,1 @@
+"""AtCoder participations API."""
