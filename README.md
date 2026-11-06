@@ -1,6 +1,33 @@
 # atcoder-participations
 
-AtCoderのコンテストアーカイブとユーザー参加履歴をSQLiteに同期し、参加・未参加コンテストを返すFastAPIアプリです。
+指定したユーザーが、指定した種類の AtCoder コンテストに直近1週間で参加したかを確認します。
+参加がなければ IFTTT の事前警告 webhook を送り、1分後に罰を実行する webhook を送ります。
+API サーバーやデータベースは使用せず、GitHub Actions が毎週月曜日23:00（JST）に単発実行します。
+
+## GitHub の設定
+
+リポジトリの Settings → Secrets and variables → Actions で次を設定してください。
+
+Secrets:
+
+- `WARNING_WEBHOOK_URL`: 事前警告用 IFTTT Webhooks URL
+- `PENALTY_WEBHOOK_URL`: 罰実行用 IFTTT Webhooks URL
+
+Variables:
+
+- `ATCODER_USERNAME`: 確認するAtCoderユーザー名。省略時は `blue_jam`
+- `TARGET_CONTEST_CLASSES`: 対象クラスをカンマ区切りで指定（例: `abc,arc`）。省略時は `abc`
+- `ATCODER_USER_AGENT`: 管理者の連絡先を含む User-Agent（設定を推奨）
+- `WEBHOOK_VALUE1`: IFTTTの `value1`。省略時はAtCoderユーザー名
+- `WEBHOOK_VALUE2`: IFTTTの `value2`。省略時は対象クラス
+- `WEBHOOK_VALUE3`: IFTTTの `value3`。省略時は判定時刻（UTC）
+
+対象クラスには `abc`、`arc`、`agc`、`ahc`、`other` を指定できます。判定期間は実行時刻の
+直前7日間です。`WEBHOOK_VALUE1`〜`WEBHOOK_VALUE3` が未設定の場合、IFTTT には
+ユーザー名・対象クラス・判定時刻（UTC）を JSON で送ります。
+
+Actions の `Weekly participation check` は手動実行もできます。スケジュールの cron は UTC の
+月曜14:00で、JST の月曜23:00に相当します。
 
 ## ローカル開発
 
@@ -9,48 +36,13 @@ Python 3.12以上を使用します。
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
 python -m pip install -r requirements.lock
 python -m pip install --no-deps -e .
-python -m pip install -e '.[dev]'
 cp .env.example .env
-alembic upgrade head
-uvicorn app.main:app --reload
+atcoder-participations
 ```
 
 本番利用前に `.env` の `ATCODER_USER_AGENT` を管理者の連絡先へ変更してください。
-
-## ユーザー管理
-
-```bash
-atcoder-participations users add blue_jam
-atcoder-participations users list
-atcoder-participations users sync blue_jam
-atcoder-participations users sync-all
-atcoder-participations users delete blue_jam
-atcoder-participations contests sync
-atcoder-participations contests reclassify
-```
-
-ユーザー追加時にアーカイブとAlgorithm・Heuristicの全参加履歴を同期します。登録後は6時間ごとの枠内でユーザーごとにランダムな時刻に更新されます。
-
-## API
-
-```bash
-curl 'http://localhost:8000/api/v1/users/blue_jam/contests?contest_class=abc&contest_class=arc&include_unparticipated=true&limit=50&offset=0'
-```
-
-`contest_class` は `abc`、`arc`、`agc`、`ahc`、`other` を複数指定できます。省略時は全クラス、`include_unparticipated` の既定値は `false` です。OpenAPI UIは `/docs` で確認できます。
-
-## Docker Compose
-
-```bash
-export ATCODER_USER_AGENT='atcoder-participations/0.1 (contact: you@example.com)'
-docker compose up --build -d
-docker compose exec api atcoder-participations users add blue_jam
-```
-
-SQLiteは名前付きボリューム `atcoder_data` に保存されます。スケジューラ重複を避けるため、APIコンテナは1レプリカで運用してください。
 
 ## 品質チェック
 
@@ -58,5 +50,4 @@ SQLiteは名前付きボリューム `atcoder_data` に保存されます。ス�
 ruff check .
 mypy app
 pytest
-docker compose config
 ```
