@@ -24,7 +24,7 @@ jobs:
       - run: pip install --no-deps .
       - run: atcoder-participations
         env:
-          ATCODER_USER_AGENT: ${{ vars.ATCODER_USER_AGENT || 'atcoder-participations/0.1 (contact: blue_jam)' }}
+          ATCODER_USER_AGENT: "${{ vars.ATCODER_USER_AGENT || 'atcoder-participations/0.1 (contact: blue_jam)' }}"
           ATCODER_USERNAME: ${{ vars.ATCODER_USERNAME || 'blue_jam' }}
           TARGET_CONTEST_CLASSES: ${{ vars.TARGET_CONTEST_CLASSES || 'abc' }}
           WEBHOOK_VALUE1: ${{ vars.WEBHOOK_VALUE1 || 'You missed the contest.' }}
